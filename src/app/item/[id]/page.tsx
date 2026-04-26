@@ -12,7 +12,7 @@ import { TagsInput } from "@/components/TagsInput";
 import { LocationSelect } from "@/components/LocationSelect";
 import { StorageSelect } from "@/components/StorageSelect";
 import { useExistingTags } from "@/lib/useExistingTags";
-import { Loader2, Trash2 } from "lucide-react";
+import { ChevronLeft, Loader2, Trash2 } from "lucide-react";
 
 export default function ItemPage() {
   const router = useRouter();
@@ -94,7 +94,15 @@ export default function ItemPage() {
 
   return (
     <main className="mx-auto max-w-xl px-4 py-6">
-      <div className="mb-4 overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
+      <button
+        type="button"
+        onClick={() => router.back()}
+        className="mb-3 inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+      >
+        <ChevronLeft size={12} />
+        Back
+      </button>
+      <div className="mb-4 overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-800">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={data.photoUrl}

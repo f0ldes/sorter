@@ -13,7 +13,7 @@ import { LocationSelect } from "@/components/LocationSelect";
 import { StorageSelect } from "@/components/StorageSelect";
 import { CameraCapture } from "@/components/CameraCapture";
 import { useExistingTags } from "@/lib/useExistingTags";
-import { Camera, Image as ImageIcon, Loader2 } from "lucide-react";
+import { Camera, ChevronLeft, Image as ImageIcon, Loader2 } from "lucide-react";
 
 export default function NewItemPage() {
   const router = useRouter();
@@ -72,6 +72,14 @@ export default function NewItemPage() {
 
   return (
     <main className="mx-auto max-w-xl px-4 py-6">
+      <button
+        type="button"
+        onClick={() => router.back()}
+        className="mb-3 inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100"
+      >
+        <ChevronLeft size={12} />
+        Back
+      </button>
       <h1 className="mb-4 text-xl font-semibold">New item</h1>
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
