@@ -15,6 +15,7 @@ import {
   X,
   Trash2,
 } from "lucide-react";
+import { PhotoEditor } from "@/components/PhotoEditor";
 
 export default function StorageDetailPage() {
   const router = useRouter();
@@ -151,6 +152,24 @@ export default function StorageDetailPage() {
           </>
         )}
       </div>
+
+      <section className="mb-6">
+        <h2 className="mb-2 text-sm font-medium text-zinc-600 dark:text-zinc-400">
+          Photo
+        </h2>
+        <PhotoEditor
+          uid={user.uid}
+          pathPrefix="storages"
+          photoUrl={data.photoUrl ?? null}
+          photoPath={data.photoPath ?? null}
+          onChange={async ({ photoUrl, photoPath }) => {
+            await updateDoc(storageDoc(user.uid, params.id!), {
+              photoUrl,
+              photoPath,
+            });
+          }}
+        />
+      </section>
 
       {itemsError && (
         <p className="mb-3 rounded-md bg-red-50 px-2 py-1.5 text-xs text-red-700 dark:bg-red-950 dark:text-red-300">

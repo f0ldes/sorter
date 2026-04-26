@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection, useDocument } from "react-firebase-hooks/firestore";
 import {
@@ -30,7 +30,10 @@ import {
   Plus,
   Boxes,
   ChevronRight,
+  ChevronDown,
 } from "lucide-react";
+import { PhotoEditor } from "@/components/PhotoEditor";
+import { MapEditor, type MapValue } from "@/components/MapEditor";
 
 export default function LocationDetailPage() {
   const router = useRouter();
@@ -40,8 +43,7 @@ export default function LocationDetailPage() {
   const [snap, loading] = useDocument(
     user && params.id ? locationDoc(user.uid, params.id) : null,
   );
-  // No orderBy on these filtered queries — that would require a Firestore
-  // composite index. We sort client-side instead (fine for MVP-scale data).
+
   const [storagesSnap, , storagesError] = useCollection(
     user && params.id
       ? query(storagesCol(user.uid), where("locationId", "==", params.id))
@@ -68,6 +70,38 @@ export default function LocationDetailPage() {
   const [editName, setEditName] = useState("");
   const [newStorage, setNewStorage] = useState("");
   const [creating, setCreating] = useState(false);
+
+  const [mapValue, setMapValue] = useState<MapValue | null>(null);
+  const [hydrated, setHydrated] = useState(false);
+  const [mapOpen, setMapOpen] = useState(false);
+
+  useEffect(() => {
+    if (!hydrated && snap?.exists()) {
+      const d = snap.data();
+      setMapValue({
+        address: d.address ?? "",
+        latitude: d.latitude ?? null,
+        longitude: d.longitude ?? null,
+      });
+      // Auto-open if there's already map data, otherwise stay collapsed.
+      setMapOpen(
+        !!(d.address?.trim() || d.latitude != null || d.longitude != null),
+      );
+      setHydrated(true);
+    }
+  }, [snap, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated || !mapValue || !user || !params.id) return;
+    const t = setTimeout(() => {
+      updateDoc(locationDoc(user.uid, params.id!), {
+        address: mapValue.address,
+        latitude: mapValue.latitude,
+        longitude: mapValue.longitude,
+      });
+    }, 400);
+    return () => clearTimeout(t);
+  }, [mapValue, hydrated, user, params.id]);
 
   if (!user || loading) {
     return (
@@ -114,6 +148,8 @@ export default function LocationDetailPage() {
       name: newStorage.trim(),
       locationId: params.id,
       parentId: null,
+      photoUrl: null,
+      photoPath: null,
       createdAt: serverTimestamp(),
     } as never);
     setNewStorage("");
@@ -130,7 +166,24 @@ export default function LocationDetailPage() {
         Locations
       </Link>
 
-      <div className="mt-2 mb-6 flex items-center gap-2">
+      <div className="mt-3 mb-4">
+        <PhotoEditor
+          uid={user.uid}
+          pathPrefix="locations"
+          variant="banner"
+          aspectRatio="3 / 1"
+          photoUrl={data.photoUrl ?? null}
+          photoPath={data.photoPath ?? null}
+          onChange={async ({ photoUrl, photoPath }) => {
+            await updateDoc(locationDoc(user.uid, params.id!), {
+              photoUrl,
+              photoPath,
+            });
+          }}
+        />
+      </div>
+
+      <div className="mt-2 mb-4 flex items-center gap-2">
         {editing ? (
           <>
             <input
@@ -174,6 +227,24 @@ export default function LocationDetailPage() {
         )}
       </div>
 
+      <section className="mb-6">
+        <button
+          type="button"
+          onClick={() => setMapOpen((v) => !v)}
+          className="mb-2 inline-flex items-center gap-1 text-sm font-medium text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+          aria-expanded={mapOpen}
+        >
+          Map
+          <ChevronDown
+            size={14}
+            className={`transition-transform ${mapOpen ? "" : "-rotate-90"}`}
+          />
+        </button>
+        {mapOpen && mapValue && (
+          <MapEditor value={mapValue} onChange={setMapValue} />
+        )}
+      </section>
+
       <h2 className="mb-2 text-sm font-medium text-zinc-600 dark:text-zinc-400">
         Storage
       </h2>
@@ -215,32 +286,35 @@ export default function LocationDetailPage() {
         </p>
       ) : (
         <ul className="mb-6 divide-y divide-zinc-200 rounded-md border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
-          {storages.map((d) => (
-            <li key={d.id} className="flex items-center gap-2 px-3 py-2">
-              <Boxes size={16} className="text-zinc-400" />
-              <Link
-                href={`/storage/${d.id}`}
-                className="flex flex-1 items-center gap-2 text-sm hover:text-zinc-600 dark:hover:text-zinc-300"
-              >
-                <span className="flex-1 font-medium">{d.data().name}</span>
-                <ChevronRight size={14} className="text-zinc-400" />
-              </Link>
-              <button
-                onClick={async () => {
-                  if (
-                    !confirm(
-                      `Delete storage "${d.data().name}"? Items inside become Unsorted.`,
+          {storages.map((d) => {
+            const s = d.data();
+            return (
+              <li key={d.id} className="flex items-center gap-2 px-3 py-2">
+                <Avatar url={s.photoUrl} fallback={Boxes} />
+                <Link
+                  href={`/storage/${d.id}`}
+                  className="flex flex-1 items-center gap-2 text-sm hover:text-zinc-600 dark:hover:text-zinc-300"
+                >
+                  <span className="flex-1 font-medium">{s.name}</span>
+                  <ChevronRight size={14} className="text-zinc-400" />
+                </Link>
+                <button
+                  onClick={async () => {
+                    if (
+                      !confirm(
+                        `Delete storage "${s.name}"? Items inside become Unsorted.`,
+                      )
                     )
-                  )
-                    return;
-                  await deleteDoc(storageDoc(user.uid, d.id));
-                }}
-                className="text-red-500 hover:text-red-700"
-              >
-                <Trash2 size={14} />
-              </button>
-            </li>
-          ))}
+                      return;
+                    await deleteDoc(storageDoc(user.uid, d.id));
+                  }}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </li>
+            );
+          })}
         </ul>
       )}
 
@@ -277,5 +351,29 @@ export default function LocationDetailPage() {
         </>
       )}
     </main>
+  );
+}
+
+function Avatar({
+  url,
+  fallback: Fallback,
+}: {
+  url: string | null | undefined;
+  fallback: typeof Boxes;
+}) {
+  if (url) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={url}
+        alt=""
+        className="h-7 w-7 shrink-0 rounded-full object-cover"
+      />
+    );
+  }
+  return (
+    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-zinc-400 dark:bg-zinc-800">
+      <Fallback size={14} />
+    </div>
   );
 }

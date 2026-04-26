@@ -63,6 +63,8 @@ export default function StoragesPage() {
       name: newName.trim(),
       locationId: newLocationId,
       parentId: null,
+      photoUrl: null,
+      photoPath: null,
       createdAt: serverTimestamp(),
     } as never);
     setNewName("");
@@ -153,7 +155,18 @@ export default function StoragesPage() {
                   href={`/storage/${d.id}`}
                   className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-900"
                 >
-                  <Boxes size={16} className="text-zinc-400" />
+                  {data.photoUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={data.photoUrl}
+                      alt=""
+                      className="h-7 w-7 shrink-0 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-zinc-400 dark:bg-zinc-800">
+                      <Boxes size={14} />
+                    </div>
+                  )}
                   <span className="font-medium">{data.name}</span>
                   {loc && (
                     <span className="text-xs text-zinc-500">in {loc}</span>

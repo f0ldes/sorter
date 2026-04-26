@@ -24,3 +24,18 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Photo edit controls: hidden by default on hover-capable devices,
+   revealed when hovering or focusing the trigger. Always visible on touch. */
+@media (hover: hover) and (pointer: fine) {
+  .photo-edit-controls {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 150ms ease;
+  }
+  .photo-edit-trigger:hover .photo-edit-controls,
+  .photo-edit-trigger:focus-within .photo-edit-controls {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}

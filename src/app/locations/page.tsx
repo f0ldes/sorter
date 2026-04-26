@@ -49,6 +49,11 @@ export default function LocationsPage() {
     await addDoc(locationsCol(user.uid), {
       name: newName.trim(),
       parentId: null,
+      photoUrl: null,
+      photoPath: null,
+      address: "",
+      latitude: null,
+      longitude: null,
       createdAt: serverTimestamp(),
     } as never);
     setNewName("");
@@ -101,7 +106,7 @@ export default function LocationsPage() {
                 .length ?? 0;
             return (
               <li key={d.id} className="flex items-center gap-2 px-3 py-2">
-                <MapPin size={16} className="text-zinc-400" />
+                <Avatar url={data.photoUrl ?? null} fallback={MapPin} />
                 {editing ? (
                   <>
                     <input
@@ -175,27 +180,54 @@ export default function LocationsPage() {
         </ul>
       )}
 
-      {unassignedStorages.length > 0 && (
+      {(unassignedStorages.length > 0) && (
         <section className="mt-8">
           <h2 className="mb-2 text-sm font-medium text-zinc-600 dark:text-zinc-400">
             Unassigned storage
           </h2>
           <ul className="divide-y divide-zinc-200 rounded-md border border-zinc-200 dark:divide-zinc-800 dark:border-zinc-800">
-            {unassignedStorages.map((d) => (
-              <li key={d.id}>
-                <Link
-                  href={`/storage/${d.id}`}
-                  className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-900"
-                >
-                  <Boxes size={16} className="text-zinc-400" />
-                  <span className="flex-1">{d.data().name}</span>
-                  <ChevronRight size={14} className="text-zinc-400" />
-                </Link>
-              </li>
-            ))}
+            {unassignedStorages.map((d) => {
+              const s = d.data();
+              return (
+                <li key={d.id}>
+                  <Link
+                    href={`/storage/${d.id}`}
+                    className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                  >
+                    <Avatar url={s.photoUrl ?? null} fallback={Boxes} />
+                    <span className="flex-1">{s.name}</span>
+                    <ChevronRight size={14} className="text-zinc-400" />
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </section>
       )}
     </main>
+  );
+}
+
+function Avatar({
+  url,
+  fallback: Fallback,
+}: {
+  url: string | null;
+  fallback: typeof MapPin;
+}) {
+  if (url) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={url}
+        alt=""
+        className="h-7 w-7 shrink-0 rounded-full object-cover"
+      />
+    );
+  }
+  return (
+    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-zinc-400 dark:bg-zinc-800">
+      <Fallback size={14} />
+    </div>
   );
 }

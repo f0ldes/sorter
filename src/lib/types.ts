@@ -18,6 +18,8 @@ export type Storage = {
   name: string;
   locationId: string | null;
   parentId: string | null;
+  photoUrl: string | null;
+  photoPath: string | null;
   createdAt: Timestamp;
 };
 
@@ -25,5 +27,10 @@ export type Location = {
   id: string;
   name: string;
   parentId: string | null;
+  photoUrl: string | null;
+  photoPath: string | null;
+  address: string;
+  latitude: number | null;
+  longitude: number | null;
   createdAt: Timestamp;
 };
