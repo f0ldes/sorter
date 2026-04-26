@@ -27,7 +27,7 @@ export function AuthGate({ children }: { children: React.ReactNode }) {
         </div>
         <button
           onClick={() => signInWithPopup(auth, googleProvider)}
-          className="inline-flex items-center gap-2 rounded-lg bg-black px-5 py-3 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+          className="bubbly inline-flex items-center gap-2 rounded-full bg-black px-5 py-3 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
         >
           <LogIn size={16} />
           Sign in with Google

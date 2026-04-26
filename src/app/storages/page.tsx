@@ -111,7 +111,7 @@ export default function StoragesPage() {
         <button
           type="submit"
           disabled={!newName.trim() || creating}
-          className="inline-flex items-center justify-center gap-1.5 rounded-md bg-black px-3 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
+          className="bubbly inline-flex items-center justify-center gap-1.5 rounded-full bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
         >
           {creating ? (
             <Loader2 size={14} className="animate-spin" />
@@ -153,7 +153,7 @@ export default function StoragesPage() {
               <li key={d.id}>
                 <Link
                   href={`/storage/${d.id}`}
-                  className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                  className="row-hover flex items-center gap-2 px-3 py-2 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-900"
                 >
                   {data.photoUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element

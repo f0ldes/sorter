@@ -155,7 +155,7 @@ export default function ItemPage() {
           <button
             type="submit"
             disabled={saving || !name.trim()}
-            className="inline-flex items-center justify-center gap-2 rounded-md bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
+            className="bubbly inline-flex items-center justify-center gap-2 rounded-full bg-black px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
           >
             {saving && <Loader2 size={14} className="animate-spin" />}
             Save changes

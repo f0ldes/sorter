@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @theme inline {
@@ -10,6 +12,13 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Slightly softer corners across the app */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.75rem;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -25,17 +34,131 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Smooth defaults for every interactive surface */
+button,
+a,
+[role="button"],
+input,
+select,
+textarea,
+label {
+  transition-property: color, background-color, border-color, opacity,
+    transform, box-shadow, filter;
+  transition-duration: 180ms;
+  transition-timing-function: var(--ease-soft);
+}
+
+/* Tactile press feedback */
+button:not(:disabled):active,
+a:active,
+[role="button"]:not(:disabled):active {
+  transform: scale(0.97);
+  transition-duration: 80ms;
+}
+
+/* Page enter — runs each time a page mounts */
+main {
+  animation: pageEnter 280ms var(--ease-spring) both;
+}
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Lift-on-hover for clickable cards */
+.card-lift {
+  transition: transform 220ms var(--ease-spring),
+    box-shadow 220ms var(--ease-soft);
+  will-change: transform;
+}
+@media (hover: hover) and (pointer: fine) {
+  .card-lift:hover {
+    transform: translateY(-3px);
+    box-shadow:
+      0 10px 25px -10px rgb(0 0 0 / 0.18),
+      0 4px 10px -6px rgb(0 0 0 / 0.08);
+  }
+}
+.card-lift:active {
+  transform: translateY(-1px) scale(0.99);
+  transition-duration: 90ms;
+}
+
+/* Soft list-row hover (no lift, just background + slight inset) */
+.row-hover {
+  transition:
+    background-color 180ms var(--ease-soft),
+    transform 180ms var(--ease-spring);
+}
+@media (hover: hover) and (pointer: fine) {
+  .row-hover:hover {
+    transform: translateX(2px);
+  }
+}
+
+/* Subtle bubbly press for primary buttons */
+.bubbly {
+  transition:
+    transform 150ms var(--ease-spring),
+    box-shadow 150ms var(--ease-soft),
+    background-color 150ms var(--ease-soft);
+}
+@media (hover: hover) and (pointer: fine) {
+  .bubbly:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow:
+      0 6px 14px -6px rgb(0 0 0 / 0.25),
+      0 2px 4px -2px rgb(0 0 0 / 0.1);
+  }
+}
+.bubbly:active:not(:disabled) {
+  transform: translateY(0) scale(0.96);
+  transition-duration: 80ms;
+}
+
 /* Photo edit controls: hidden by default on hover-capable devices,
    revealed when hovering or focusing the trigger. Always visible on touch. */
 @media (hover: hover) and (pointer: fine) {
   .photo-edit-controls {
     opacity: 0;
     pointer-events: none;
-    transition: opacity 150ms ease;
+    transition: opacity 180ms var(--ease-soft);
   }
   .photo-edit-trigger:hover .photo-edit-controls,
   .photo-edit-trigger:focus-within .photo-edit-controls {
     opacity: 1;
     pointer-events: auto;
+  }
+}
+
+/* Modal/overlay fade-in (CameraCapture) */
+.fade-in {
+  animation: fadeIn 200ms var(--ease-soft) both;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Honor reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  main {
+    animation: none !important;
   }
 }

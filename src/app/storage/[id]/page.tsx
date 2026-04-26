@@ -196,7 +196,7 @@ export default function StorageDetailPage() {
               <li key={d.id}>
                 <Link
                   href={`/item/${d.id}`}
-                  className="block overflow-hidden rounded-lg border border-zinc-200 bg-white transition hover:shadow-md dark:border-zinc-800 dark:bg-zinc-950"
+                  className="card-lift block overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950"
                 >
                   <div className="aspect-square w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900">
                     {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -258,7 +258,7 @@ export default function LocationDetailPage() {
         <button
           type="submit"
           disabled={!newStorage.trim() || creating}
-          className="inline-flex items-center gap-1.5 rounded-md bg-black px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
+          className="bubbly inline-flex items-center gap-1.5 rounded-full bg-black px-4 py-1.5 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-black"
         >
           {creating ? (
             <Loader2 size={14} className="animate-spin" />
@@ -330,7 +330,7 @@ export default function LocationDetailPage() {
                 <li key={d.id}>
                   <Link
                     href={`/item/${d.id}`}
-                    className="block overflow-hidden rounded-lg border border-zinc-200 bg-white transition hover:shadow-md dark:border-zinc-800 dark:bg-zinc-950"
+                    className="card-lift block overflow-hidden rounded-2xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950"
                   >
                     <div className="aspect-square w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900">
                       {/* eslint-disable-next-line @next/next/no-img-element */}

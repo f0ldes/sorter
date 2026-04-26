@@ -48,7 +48,7 @@ export function Nav() {
         {link("/storages", "Storages", Boxes, ["/storages", "/storage"])}
         <Link
           href="/new"
-          className="ml-1 inline-flex shrink-0 items-center gap-1.5 rounded-md bg-black px-2.5 py-1.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+          className="bubbly ml-1 inline-flex shrink-0 items-center gap-1.5 rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
         >
           <Plus size={15} />
           New

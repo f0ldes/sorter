@@ -79,7 +79,7 @@ export function CameraCapture({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-black">
+    <div className="fade-in fixed inset-0 z-50 flex flex-col bg-black">
       <div className="flex items-center justify-between p-3 text-white">
         <button
           onClick={onCancel}
