@@ -3,13 +3,17 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { useCollection } from "react-firebase-hooks/firestore";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { itemsCol } from "@/lib/paths";
 import { Library, MapPin, Boxes, Plus, LogOut } from "lucide-react";
 
 export function Nav() {
   const [user] = useAuthState(auth);
   const pathname = usePathname();
+  const [itemsSnap] = useCollection(user ? itemsCol(user.uid) : null);
+  const totalItems = itemsSnap?.size ?? 0;
 
   if (!user) return null;
 
@@ -54,6 +58,13 @@ export function Nav() {
           New
         </Link>
       </div>
+      <span
+        className="shrink-0 px-2.5 py-1 text-xs font-medium text-zinc-700  dark:text-zinc-300"
+        title={`${totalItems} total items`}
+      >
+        <span className="ml-1 hidden mr-1 text-zinc-500 sm:inline">total:</span>
+        {totalItems}
+      </span>
       <button
         onClick={() => signOut(auth)}
         title={user.email ?? "Sign out"}
